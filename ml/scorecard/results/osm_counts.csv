@@ -1,0 +1,3 @@
+city,area_km2,buildings,bld_levels,bld_height,bld_address,amenities,shops,transit_stops,parks,cycleways,trees
+London,36.0,37626,18504,290,21671,16377,4381,1323,260,2262,25701
+Tokyo,36.0,63563,10809,4821,4533,16989,5052,1542,284,93,3683
