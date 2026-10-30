@@ -1,133 +1,134 @@
 # Tomorrowhood
 
-**Where to live in 2035, not 2025.**
-A neighbourhood-level, climate-aware recommendation platform for ten of the world's most cosmopolitan cities. It ranks areas by where they are *heading*, not just how they look today, and shows its forecasts with honest uncertainty.
+**Where to live in 2035, not 2026.**
 
-> *Tomorrowhood is a working title (tomorrow + neighbourhood). A quick search found no obvious conflicts, but check domain, GitHub handle and trademark before committing.*
+A forward-looking, neighbourhood-level relocation advisor for ten of the world's most cosmopolitan, immigrant-receiving cities. It ranks areas by where they are *heading*, not just how they look today, stress-tests them against climate, policy and geopolitical scenarios, and shows every forecast with honest uncertainty.
 
----
-
-## Summary
-
-Choosing where to live is a long-term investment, yet most tools rank countries or cities by today's conditions. People rarely regret the country; they regret the **neighbourhood**. And almost nobody weighs **climate, sustainability and geopolitics**, although these decide how a place will feel in ten years.
-
-Tomorrowhood takes a short profile (budget, work, priorities, environment, time horizon, risk tolerance) and returns a **mixed shortlist of neighbourhoods across ten global, immigrant-receiving cities**. Each area is scored on forecast trajectories and stress-tested against several possible futures. Users refine the list with a feedback loop ("remove this city", "I need a park within ten minutes") and see every score with its source and confidence.
-
-**Cities (v1):** Tokyo, Singapore, Seoul, Melbourne, London, New York City, San Francisco, Paris, Berlin, Toronto. The pipeline is built on London, NYC, Tokyo and Singapore first; Berlin and Toronto come last because their open housing data is limited, which makes them a useful test of how the system behaves with less data.
+> **Status: early development (Phase 0, data foundation).** Nothing here is a finished product yet. The plan, decisions and progress are public in this repository.
 
 ---
 
-## The problem
+## Why this exists
 
-- Rankings hide huge within-city differences; two districts in the same city can be worlds apart.
-- Climate hazards (heat, floods, typhoons, subsidence, earthquakes), sustainability and geopolitical exposure are rarely part of the decision, and where they are, they appear as a snapshot or a single score.
-- Existing "AI relocation advisors" are mostly city-level, with undisclosed data and no stated forecasting. Property-level climate-risk tools exist, but mainly for the US.
-- Most people have no way to compare a London borough with a Tokyo ward or a Toronto neighbourhood against their own priorities, including immigration and policy realities.
+Choosing where to live is a long-term investment, yet most tools rank countries or cities by today's conditions. People rarely regret the country; they regret the **neighbourhood**. And almost nobody weighs **climate, sustainability and geopolitics**, even though these decide how a place will feel in ten years.
 
----
+Tomorrowhood takes a short profile (budget, work, priorities, environment, time horizon, risk tolerance) and returns a mixed shortlist of neighbourhoods across cities, refined by a feedback loop ("remove this city", "I need a park within ten minutes"). Every score expands to its data source and confidence.
 
-## What it does
+## Cities (v1)
 
-1. **Short profile first, depth later.** A five-minute core profile gives a first shortlist immediately. Optional modules (personality, interests, values, household, finances, future worldview) refine it, each showing what it changes.
-2. **Forward-looking scores.** 3–10 year trajectories per dimension, with uncertainty bands, not only today's values.
-3. **Scenario stress tests.** Shortlists are checked under climate, policy, economic and geopolitical scenarios; the **regret view** shows which areas stay good in all of them.
-4. **Hard floors.** Safety, cleanliness, aesthetics and traffic are minimum thresholds, not weights. Areas below them are excluded, and the app says why.
-5. **Feedback loop.** Quick critiques re-rank instantly with a "what changed" diff and learn the user's preferences.
-6. **Glass-box scoring.** Every number expands to its data source and confidence; data richness is shown as confidence, never as quality.
-7. **Decision tools.** Side-by-side comparison, sensitivity notes ("this flips if you weigh safety 20% more"), a net-worth and cost simulation, and a scouting plan for visiting the top areas.
+Tokyo · Singapore · Seoul · Melbourne · London · New York City · San Francisco · Paris · Berlin · Toronto
 
----
+The pipeline is built on **London, New York City, Tokyo and Singapore** first. Berlin and Toronto come last because their open housing data is limited, which makes them a useful test of how the system behaves with less data.
 
 ## Five pillars
 
 | Pillar | What it covers |
 |---|---|
-| **Future investment** | 3–10 year trajectories; livability and financial trends kept separate |
-| **Climate resilience** | Heat, flood, typhoon, sea level, subsidence, seismic risk; adaptation capacity; insurability |
-| **Sustainability** | Transit, air-quality trend, green space, energy mix, walkability, personal carbon footprint |
-| **Geopolitical exposure** | Stability, conflict proximity, energy and food dependence, policy risk; shown as flags and stress tests, never predictions |
-| **Personal fit** | A user-weighted utility under constraints, with regret minimisation across futures |
+| **Future investment** | 3 to 10 year trajectories; livability and financial trends kept separate |
+| **Climate resilience** | Heat, flood, storm, wildfire, sea level, seismic risk; adaptation capacity |
+| **Sustainability** | Transit, air quality trend, green space, walkability, personal carbon footprint |
+| **Geopolitical exposure** | Stability, policy and immigration-rule risk; shown as flags and stress tests, never predictions |
+| **Personal fit** | A user-weighted utility under hard constraints, with regret minimisation across futures |
 
----
+## What it will do
 
-## How it works (technical)
+- **Short profile first, depth later.** A five-minute core profile gives a first shortlist; optional modules (career, language, family, finances, community) refine it.
+- **Forward-looking scores** with uncertainty bands, not only today's values.
+- **Scenario stress tests and a regret view:** which areas stay good across several possible futures.
+- **Hard floors** for safety (including an opt-in women's-safety floor), noise, air quality and hazards. Areas below a floor are excluded, and the app says why.
+- **Neighbourhood twin finder:** name an area you know, and get the closest matches in other cities.
+- **Immigration pathway planner:** route cards (study, skilled work, startup, remote work) with official sources and "last verified" dates. Not legal advice.
+- **Arrival tools:** a landing-area recommendation for the first weeks, airport access, and a first-year cost estimate.
+- **Glass-box scoring:** every number links to its source, licence and confidence. Data richness is shown as confidence, never as quality.
 
-**Pipeline:** open data sources → standardised H3 hexagonal-grid features → trajectory models with uncertainty → scenario engine → user-weighted, floor-filtered ranking → regret-minimising shortlist → critique loop.
+The full list, grouped and prioritised, is in the [feature catalog](docs/feature-catalog.md). Decisions and rejected ideas are in the [feature log](FEATURE-LOG.md).
 
-**Layers:** country (policy and eligibility, geopolitics) → city (economy, macro and climate context) → neighbourhood (all dimensions and trajectories).
+## How it works
 
-**Planned stack**
-- **Web:** Next.js, TypeScript, Tailwind CSS, Auth.js, Prisma with PostgreSQL/PostGIS, MapLibre GL, Recharts
-- **ML and data service:** Python, FastAPI, GeoPandas, H3, OpenStreetMap, GTFS ingestion, an open-source routing engine, scikit-learn and gradient boosting, conformal prediction for uncertainty, statsmodels
-- **Ops:** Docker, GitHub Actions CI, tests (unit and end to end)
+```
+open data → H3 hexagonal-grid feature tables → trajectory models with uncertainty
+→ scenario engine → user-weighted, floor-filtered ranking
+→ regret-minimising shortlist → critique loop
+```
 
-**Data:** national transaction and statistics portals, OpenStreetMap, GHSL and WorldPop, Sentinel and VIIRS satellite data, Overture, Mapillary, transit feeds, and published climate-scenario datasets. A **data-licence register** records the licence and commercial-use terms of every source.
+Layers: **country** (policy, eligibility, geopolitics) → **city** (economy, climate context) → **neighbourhood** (all dimensions and trajectories).
 
----
+**Planned stack** (subject to change as phases complete)
+- **Data and ML:** Python, pandas, GeoPandas, H3, DuckDB and Parquet, scikit-learn, LightGBM, statsmodels, conformal prediction for uncertainty
+- **Service:** FastAPI for ranking and scenarios
+- **Web:** Next.js, TypeScript, Tailwind CSS, Auth.js, PostgreSQL with PostGIS, MapLibre GL
+- **Ops:** GitHub Actions CI, tests
+
+Deep learning (for example street-imagery models) is deliberately deferred to v2.
 
 ## Evaluation (the credibility core)
 
 - **Temporal backtests:** train on the past, predict the future; no random splits for forward-looking targets.
-- **Per-dimension backtests** against each dimension's own history (population, built-up growth, air quality, transit access, flood events).
-- **Leave-one-city-out validation** (for example London → Paris, Tokyo → Seoul, NYC → SF, and Europe/North America → Asia), with domain shift reported openly.
-- **Ablation and rank stability** using only globally uniform features versus the full set.
+- **Leave-one-city-out validation** (for example London → Paris, Tokyo → Seoul), with domain shift reported openly.
+- **Ablations and rank stability** across feature sets.
 - **Calibration** of every uncertainty interval, with failures reported.
-- **User study** (20–30 people): do the deeper questionnaires improve perceived fit?
+- **User study** (20 to 30 people) on whether deeper questionnaires improve perceived fit.
 
----
+## Progress so far
+
+**Phase 0: data-coverage scorecard.** Before choosing the build order, the project measures how much OpenStreetMap data each city actually has, on an equal 6 km × 6 km square around the centre.
+
+First results (more cities running):
+
+| City | Buildings / km² | Amenities / km² | Transit stops / km² | Buildings with floor count | Buildings with address |
+|---|---|---|---|---|---|
+| London | 1,045 | 455 | 37 | 49% | 58% |
+| Tokyo | 1,766 | 472 | 43 | 17% | 7% |
+
+These numbers show why raw tag completeness is not a quality score: Tokyo's low address rate reflects Japan's block-based addressing, not poor mapping. The project therefore treats data richness as a confidence signal, read against each city's own conventions.
+
+## Repository layout
+
+```
+ml/                    data pipeline, scorecard and models (Python)
+  scorecard/           OpenStreetMap coverage measurement
+web/                   Next.js application
+PROJECT-ROADMAP.md     product thesis, architecture, phases, decision log
+FEATURE-LOG.md         every feature decision (accepted, deferred, rejected)
+docs/feature-catalog.md  grouped feature catalog with data sources and waves
+```
+
+## Running the scorecard
+
+```bash
+cd ml
+python -m venv .venv
+# Windows: .venv\Scripts\Activate.ps1    macOS/Linux: source .venv/bin/activate
+pip install requests pandas
+python scorecard/osm_coverage.py --cities London Tokyo
+```
+
+Edit the contact address in the script's `User-Agent` before running; the public Overpass servers ask scripts to identify themselves. Results are cached and written to `ml/scorecard/results/`.
 
 ## Honest limits and ethics
 
-- Covers the **measurable half** of the decision. Community, language and personal ties are only partly visible to data.
-- Geopolitics is the weakest-forecastable pillar; it is shown as exposure flags and scenarios.
-- No ethnicity or demographic-composition features; displacement and gentrification risk are shown openly.
+- The product covers the **measurable half** of the decision. Community, language and personal ties are only partly visible to data.
+- Geopolitics is the hardest pillar to forecast; it appears as exposure flags and scenarios, not predictions.
+- No ethnicity or race features. Community-related features (international concentration, home-community presence) are **opt-in and positive-only**: there is never an option to avoid areas because of who lives there.
 - Perception and aesthetic scores are experimental and flagged as culturally biased.
 - Sensitive profile data (personality, finances) is consented, minimised and deletable.
 - Not legal, immigration, financial or insurance advice.
 
----
+## Data and licences
 
-## Roadmap (summary)
+The project uses open data (OpenStreetMap under ODbL, national statistics, transit feeds, satellite and climate-scenario datasets) and records the licence and commercial-use terms of every source. Listing portals and booking platforms are not scraped. OpenStreetMap data © OpenStreetMap contributors.
+
+## Roadmap
 
 | Stage | Focus |
 |---|---|
-| **MVP** | Accounts, short profile, 4 cities (London, NYC, Tokyo, Singapore), a few dimensions plus climate hazards, one real backtest, map UI, critique loop |
-| **v1** | All ten cities, scenario engine, questionnaires, regret view, scouting plan, street-view indicators |
-| **v2** | Community matching, monitoring alerts, nature and remote-destination mode, more regions |
+| **MVP** | Accounts, short profile, 4 cities (London, NYC, Tokyo, Singapore), core features plus climate hazards, one real backtest, map UI, critique loop |
+| **v1** | All ten cities, scenario engine, questionnaires, regret view, twin finder, scouting plan |
+| **v1.5** | Pathway planner, arrival tools, street-view indicators, geopolitical flags |
+| **v2** | Community matching, monitoring alerts, deep-learning imagery features, more regions |
 
-The full plan, decisions and open items are in the master roadmap.
+Details: [PROJECT-ROADMAP.md](PROJECT-ROADMAP.md).
 
----
+## Prior work
 
-## Status
-
-Planning. Earlier work in this repository family (a badminton pose-analysis prototype) is parked and documented as a research prototype.
-
----
-
-## Resume blurbs
-
-**One line:** Built a climate-aware, forward-looking neighbourhood recommender across ten global cities, with temporal backtests, calibrated uncertainty and scenario stress tests.
-
-**Three lines:**
-- Designed a pipeline that turns open geospatial, transit, statistics and climate-scenario data into 3–10 year neighbourhood trajectories on an H3 grid.
-- Validated with temporal backtests and leave-one-city-out transfer tests, reporting calibration and failure cases openly.
-- Shipped a map-based web app with personalised shortlists, regret-minimising rankings and a feedback loop.
-
-*(Fill in the real numbers and results once built; do not publish these claims before the evaluation exists.)*
-
----
-
-## GitHub repository text
-
-**Repository name (suggestion):** `tomorrowhood`
-
-**Description (256 characters, limit 350):**
-Climate-aware, forward-looking neighbourhood recommender for 10 global cities. Ranks areas by where they're heading (2035, not 2025): climate hazards, sustainability, geopolitical exposure and personal fit, with backtested forecasts and honest uncertainty.
-
-**Shorter alternative (155 characters):**
-Where to live in 2035, not 2025: neighbourhood-level, climate-aware recommendations for 10 global cities, with backtested forecasts and honest uncertainty.
-
-**Suggested topics:** `machine-learning`, `geospatial`, `time-series-forecasting`, `climate-risk`, `urban-analytics`, `recommender-system`, `nextjs`, `fastapi`, `h3`, `openstreetmap`, `relocation`, `sustainability`
-
-**Website field:** leave empty until a stable demo is deployed.
+An earlier badminton pose-analysis prototype (MediaPipe and YOLO-Pose experiments) is parked in this repository family as a documented research prototype.
