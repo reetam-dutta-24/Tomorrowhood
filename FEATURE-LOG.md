@@ -233,4 +233,5 @@ Where a feature is a snapshot, the report says so. The backtests in the evaluati
 
 - **Core form (about 5 minutes):** life-stage preset (O3), budget and home type (A2, A4, A5), commute (C3), climate preference (K1), top priorities as sliders (one per group: daily convenience, fitness and nature, leisure and culture, education, health, mobility), and hard floors (safety, noise, air quality, hazards).
 - **Optional modules:** career (J1), language (I4, I8), origin-culture presence (I3), international or local-immersion preference (I9), home-community presence (I10), family (D2), student or bachelor needs (A6), nightlife and social scene (G2), accessibility (B8), household mode (O8), opt-in flags (I6).
-- **Report:** the same groups appear as sections, each showing the raw measures behind the score and their data confidence.
+- **Report:** the same groups appear as sections, each showing the raw measures behind the score and their data confidence.| 2026-10-31 | A8 Temporary stay options for the arrival period (no live prices or ratings) | Accepted (V1.5) | OSM lodging tags plus curated price bands; links out to booking sites |
+| 2026-10-31 | C7 Proximity to an international airport (close / no preference / not too close) | Accepted (V1) | OSM, OurAirports and routing |
