@@ -202,7 +202,7 @@ Table per source: URL, licence, commercial use?, attribution or share-alike duti
 
 ## 10. Ethics, privacy and limits
 - Personality, values, affinities and finances are sensitive: consent, encryption, minimisation, easy deletion (India's DPDP Act, GDPR).
-- No ethnicity or demographic-composition features; show displacement and gentrification risk openly.
+- No ethnicity or race features. Nationality or country-of-birth aggregates are allowed only as **opt-in, positive-only affinity features** (international concentration, home-community presence), from official aggregate statistics with minimum cell sizes; there is never an option to avoid areas because of who lives there. Show displacement and gentrification risk openly. See `FEATURE-CATALOG.md`, "Guardrails for community features".
 - Geopolitics presented neutrally as evidence-based exposure flags, never as political advocacy; not predictions.
 - Perception and aesthetic scores are experimental and culturally biased.
 - Data richness means confidence, not quality.

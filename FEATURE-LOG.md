@@ -2,7 +2,7 @@
 
 Single source of truth linking **what the user cares about → what data measures it → what the form asks → what the report shows.** Built from the founder's 47-item list plus every addition accepted on 31 Oct 2026.
 
-**Status: v1 feature list frozen.** All items below are accepted. New ideas go to `FEATURE-LOG.md` as V2 unless they replace something here. Roughly 69 data features, 15 decision tools and one pathway-planner module.
+**Status: v1 feature list frozen.** All items below are accepted. New ideas go to `FEATURE-LOG.md` as V2 unless they replace something here. Roughly 71 data features, 15 decision tools and one pathway-planner module.
 
 ## How to read this
 
@@ -117,12 +117,24 @@ Single source of truth linking **what the user cares about → what data measure
 |---|---|---|---|---|---|---|---|
 | I1 | Population density and growth | 25 | N | Weight, Target | GHSL, WorldPop, census | 🟢 | MVP |
 | I2 | Neighbourhood affluence (price tier, income level) | 26 | N | Weight / Filter | Small-area census income where available | 🟡 | MVP |
-| I3 | Home-culture presence: cuisine, places of worship, halal, vegetarian | 5 | N | Weight | OSM points of interest only. No ethnicity or demographic-composition features | 🟡 | V1 |
+| I3 | Home-culture presence: cuisine, places of worship, halal, vegetarian | 5 | N | Weight | OSM points of interest only. No ethnicity, race or religion composition features (the aggregate exceptions are I9 and I10) | 🟡 | V1 |
 | I4 | Language environment (English friendliness) and readiness to learn a language | 41 | Co/Ci | Weight | Curated; some proficiency indices are proprietary ❓ | 🟡 | V1 |
 | I5 | Immigrant welfare and integration support | 23 | Co | Info | Hand-curated policy layer, dated and sourced | 🟡 | V1 |
 | I6 | LGBTQ+ legal protections and acceptance (opt-in) | new | Co | Flag (opt-in) | Legal-rights indices ❓ licences | 🟡 | V1.5 |
 | I7 | Gentrification and displacement risk | roadmap | N | Info | Derived from price trends | 🟡 | V1.5 |
 | I8 | Language difficulty from the user's native language | new | Co | Info | Published difficulty categories; coverage for non-English native languages to verify ❓ | 🟡 | V1 (if a source exists) |
+| I9 | International and expat community presence. The user chooses: **prefer more international / no preference / prefer more local immersion** | new | N | Weight (opt-in, three-way) | Small-area foreign-born or foreign-national share from national statistics (UK census, US ACS, Japan e-Stat, Korean district foreign-resident counts, Statistics Canada, ABS, INSEE, Berlin residents register ❓; Singapore likely resident vs non-resident only ❓), plus service proxies from OSM: international schools, embassies and consulates, coworking, English-language venues. **Aggregate share only; no breakdown by nationality, ethnicity or religion** | 🟡 | V1 |
+| I10 | Home-community presence: areas with an established community of the user's own nationality or language. Opt-in, **positive-only** ("find areas with my community"), never "avoid areas with group X" | new | N | Weight (opt-in) | Officially published country-of-birth or nationality aggregates with minimum cell sizes where available ❓ (this is the one feature that needs a per-nationality breakdown); fallback proxies from OSM: cultural centres, places of worship, specialist grocers, language schools, community organisations | 🟡 | V1.5 |
+
+Note on I9: this is where we first use population composition, so it has guardrails. It is opt-in, uses only the total foreign-resident share (never a breakdown by group), is shown with context and a data-confidence flag, and is framed as "international community vs local immersion" (a language learner may reasonably want the second). Census counts update every few years, so this is a snapshot, not a forecast target. The roadmap's ethics section is updated to match.
+
+Note on I10 (for users who want to live near people from their own country): I9 deliberately avoids any breakdown by nationality. I10 needs one (the user's own nationality), so it is a separate and more guarded feature:
+- **Opt-in and positive-only.** It finds areas with an established community of the user's nationality or language. There is no option to avoid or rank down areas because of who else lives there.
+- **Nationality or country of birth only.** Never ethnicity, race or religion. Only officially published aggregates with minimum cell sizes, never individual-level data.
+- **Presence, not majority.** True single-nationality majority areas are rare in these cities, so I10 measures how established a community is (share and community points of interest), not whether it is a majority.
+- **Informational.** The report shows it as a layer ("an established Korean community is here") and, where relevant, notes the trade-off with local immersion. It never labels an area better or worse.
+- **Uneven data.** Where no small-area nationality data exists, the app falls back to community points of interest and says which source it used.
+- Reviewed against local anti-discrimination and data-protection rules (for example GDPR in Europe) before launch. This is a product decision, not legal advice.
 
 ## J. Economy and career
 
@@ -191,7 +203,7 @@ A structured roadmap from the user's country to the target city.
 | O3 | Life-stage presets | Student, young professional, family, remote worker, retiree; each pre-fills the form with weights the user can override | Form | MVP |
 | O4 | Life-routine simulator | User describes a typical week; we compute weekly travel hours and cost per shortlisted area | Routing, B1 to B3, C1, C3, G4 | V1 |
 | O5 | Eligibility-aware shortlist | Cities with no realistic route for the user are excluded or penalised, with the reason shown | Pathway module (N), L1, L4 | V1.5 |
-| O6 | Landing area vs settling area | Recommends a short-stay landing area (transit, services, newcomer-friendly) separately from the long-term one | OSM accommodation tags, B2, C1, A7 | V1.5 |
+| O6 | Landing area vs settling area | Recommends a short-stay landing area (transit, services, newcomer-friendly) separately from the long-term one | OSM accommodation tags, B2, C1, A7, I9 | V1.5 |
 | O7 | Pre-mortem ("why you might regret this") | Top three risks for this user and area, from rules over the data; no LLM | All dimensions, sensitivity analysis | V1 |
 | O8 | Couples and household mode | Two workplaces and two preference sets; finds areas that balance both and shows fairness | C3, ranking engine | V1.5 |
 | O9 | Before/after comparison | User enters where they live now; report shows change in commute, savings, climate, hazards, amenities | O1, J3, K1, K2 | V1.5 |
@@ -220,5 +232,5 @@ Where a feature is a snapshot, the report says so. The backtests in the evaluati
 ## How the preference form falls out of this catalog
 
 - **Core form (about 5 minutes):** life-stage preset (O3), budget and home type (A2, A4, A5), commute (C3), climate preference (K1), top priorities as sliders (one per group: daily convenience, fitness and nature, leisure and culture, education, health, mobility), and hard floors (safety, noise, air quality, hazards).
-- **Optional modules:** career (J1), language (I4, I8), origin-culture presence (I3), family (D2), student or bachelor needs (A6), nightlife and social scene (G2), accessibility (B8), household mode (O8), opt-in flags (I6).
+- **Optional modules:** career (J1), language (I4, I8), origin-culture presence (I3), international or local-immersion preference (I9), home-community presence (I10), family (D2), student or bachelor needs (A6), nightlife and social scene (G2), accessibility (B8), household mode (O8), opt-in flags (I6).
 - **Report:** the same groups appear as sections, each showing the raw measures behind the score and their data confidence.
