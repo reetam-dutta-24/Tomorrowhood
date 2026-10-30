@@ -37,6 +37,7 @@ CITIES = {
     "Seoul": (37.5665, 126.9780),
     "Berlin": (52.5200, 13.4050),
     "Toronto": (43.6532, -79.3832),
+    "Singapore-2": (1.3343, 103.8563),
 }
 
 # metric -> Overpass selectors (ways only for buildings; relations are excluded,

@@ -40,6 +40,7 @@ The pipeline is built on **London, New York City, Tokyo and Singapore** first. B
 - **Immigration pathway planner:** route cards (study, skilled work, startup, remote work) with official sources and "last verified" dates. Not legal advice.
 - **Arrival tools:** a landing-area recommendation for the first weeks, airport access, and a first-year cost estimate.
 - **Glass-box scoring:** every number links to its source, licence and confidence. Data richness is shown as confidence, never as quality.
+- **Grounded AI assistant (later):** a chatbot built on retrieval-augmented generation (RAG) that answers questions from the project's curated sources and structured data, with citations. It explains results; it does not generate the scores.
 
 The full list, grouped and prioritised, is in the [feature catalog](docs/feature-catalog.md). Decisions and rejected ideas are in the [feature log](FEATURE-LOG.md).
 
@@ -73,14 +74,24 @@ Deep learning (for example street-imagery models) is deliberately deferred to v2
 
 **Phase 0: data-coverage scorecard.** Before choosing the build order, the project measures how much OpenStreetMap data each city actually has, on an equal 6 km × 6 km square around the centre.
 
-First results (more cities running):
+Results for all ten cities (OpenStreetMap only; housing, climate and transit-feed coverage are measured separately):
 
-| City | Buildings / km² | Amenities / km² | Transit stops / km² | Buildings with floor count | Buildings with address |
+| City | Buildings / km² | Amenities / km² | Transit stops / km² | Building height info (at least) | Buildings with address |
 |---|---|---|---|---|---|
-| London | 1,045 | 455 | 37 | 49% | 58% |
+| Paris | 1,145 | 1,103 | 53 | 68% | 1% |
+| Berlin | 616 | 656 | 26 | 67% | 18% |
+| New York | 671 | 516 | 37 | 95% | 74% |
 | Tokyo | 1,766 | 472 | 43 | 17% | 7% |
+| London | 1,045 | 455 | 37 | 49% | 58% |
+| Toronto | 624 | 345 | 25 | 23% | 39% |
+| Seoul | 679 | 323 | 29 | 12% | 19% |
+| Melbourne | 950 | 247 | 22 | 23% | 66% |
+| San Francisco | 1,301 | 241 | 46 | 81% | 78% |
+| Singapore | 426 | 200 | 21 | 46% | 73% |
 
-These numbers show why raw tag completeness is not a quality score: Tokyo's low address rate reflects Japan's block-based addressing, not poor mapping. The project therefore treats data richness as a confidence signal, read against each city's own conventions.
+"Building height info" is the larger of the share of buildings with a floor count and the share with a height tag, so it is a lower bound.
+
+These numbers show why raw tag completeness is not a quality score. Paris's near-zero address rate reflects France's separate national address database, and Tokyo's reflects block-based addressing; neither is poor mapping. The high height coverage in New York and San Francisco comes from official building-footprint imports. The project therefore treats data richness as a confidence signal, read against each city's own conventions, and fills gaps with other sources (for example, Tokyo's building heights).
 
 ## Repository layout
 
