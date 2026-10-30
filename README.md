@@ -1,7 +1,7 @@
 # Tomorrowhood
 
 **Where to live in 2035, not 2025.**
-A neighbourhood-level, climate-aware recommendation platform for Asia-Pacific. It ranks areas by where they are *heading*, not just how they look today, and shows its forecasts with honest uncertainty.
+A neighbourhood-level, climate-aware recommendation platform for ten of the world's most cosmopolitan cities. It ranks areas by where they are *heading*, not just how they look today, and shows its forecasts with honest uncertainty.
 
 > *Tomorrowhood is a working title (tomorrow + neighbourhood). A quick search found no obvious conflicts, but check domain, GitHub handle and trademark before committing.*
 
@@ -11,9 +11,9 @@ A neighbourhood-level, climate-aware recommendation platform for Asia-Pacific. I
 
 Choosing where to live is a long-term investment, yet most tools rank countries or cities by today's conditions. People rarely regret the country; they regret the **neighbourhood**. And almost nobody weighs **climate, sustainability and geopolitics**, although these decide how a place will feel in ten years.
 
-Tomorrowhood takes a short profile (budget, work, priorities, environment, time horizon, risk tolerance) and returns a **mixed shortlist of neighbourhoods across nine Asia-Pacific cities**. Each area is scored on forecast trajectories and stress-tested against several possible futures. Users refine the list with a feedback loop ("remove this city", "I need a park within ten minutes") and see every score with its source and confidence.
+Tomorrowhood takes a short profile (budget, work, priorities, environment, time horizon, risk tolerance) and returns a **mixed shortlist of neighbourhoods across ten global, immigrant-receiving cities**. Each area is scored on forecast trajectories and stress-tested against several possible futures. Users refine the list with a feedback loop ("remove this city", "I need a park within ten minutes") and see every score with its source and confidence.
 
-**Cities (v1):** Tokyo, Osaka, Seoul, Taipei, Singapore, Hong Kong, Kuala Lumpur, Bangkok, Ho Chi Minh City.
+**Cities (v1):** Tokyo, Singapore, Seoul, Melbourne, London, New York City, San Francisco, Paris, Berlin, Toronto. The pipeline is built on London, NYC, Tokyo and Singapore first; Berlin and Toronto come last because their open housing data is limited, which makes them a useful test of how the system behaves with less data.
 
 ---
 
@@ -22,7 +22,7 @@ Tomorrowhood takes a short profile (budget, work, priorities, environment, time 
 - Rankings hide huge within-city differences; two districts in the same city can be worlds apart.
 - Climate hazards (heat, floods, typhoons, subsidence, earthquakes), sustainability and geopolitical exposure are rarely part of the decision, and where they are, they appear as a snapshot or a single score.
 - Existing "AI relocation advisors" are mostly city-level, with undisclosed data and no stated forecasting. Property-level climate-risk tools exist, but mainly for the US.
-- Most people have no way to compare a Tokyo ward with a Seoul district against their own priorities.
+- Most people have no way to compare a London borough with a Tokyo ward or a Toronto neighbourhood against their own priorities, including immigration and policy realities.
 
 ---
 
@@ -69,7 +69,7 @@ Tomorrowhood takes a short profile (budget, work, priorities, environment, time 
 
 - **Temporal backtests:** train on the past, predict the future; no random splits for forward-looking targets.
 - **Per-dimension backtests** against each dimension's own history (population, built-up growth, air quality, transit access, flood events).
-- **Leave-one-city-out validation** (for example train on Tokyo, predict Osaka), with domain shift reported openly.
+- **Leave-one-city-out validation** (for example London → Paris, Tokyo → Seoul, NYC → SF, and Europe/North America → Asia), with domain shift reported openly.
 - **Ablation and rank stability** using only globally uniform features versus the full set.
 - **Calibration** of every uncertainty interval, with failures reported.
 - **User study** (20–30 people): do the deeper questionnaires improve perceived fit?
@@ -91,8 +91,8 @@ Tomorrowhood takes a short profile (budget, work, priorities, environment, time 
 
 | Stage | Focus |
 |---|---|
-| **MVP** | Accounts, short profile, 4 strong-data cities, a few dimensions plus climate hazards, one real backtest, map UI, critique loop |
-| **v1** | All nine cities, scenario engine, questionnaires, regret view, scouting plan, street-view indicators |
+| **MVP** | Accounts, short profile, 4 cities (London, NYC, Tokyo, Singapore), a few dimensions plus climate hazards, one real backtest, map UI, critique loop |
+| **v1** | All ten cities, scenario engine, questionnaires, regret view, scouting plan, street-view indicators |
 | **v2** | Community matching, monitoring alerts, nature and remote-destination mode, more regions |
 
 The full plan, decisions and open items are in the master roadmap.
@@ -107,7 +107,7 @@ Planning. Earlier work in this repository family (a badminton pose-analysis prot
 
 ## Resume blurbs
 
-**One line:** Built a climate-aware, forward-looking neighbourhood recommender across nine Asia-Pacific cities, with temporal backtests, calibrated uncertainty and scenario stress tests.
+**One line:** Built a climate-aware, forward-looking neighbourhood recommender across ten global cities, with temporal backtests, calibrated uncertainty and scenario stress tests.
 
 **Three lines:**
 - Designed a pipeline that turns open geospatial, transit, statistics and climate-scenario data into 3–10 year neighbourhood trajectories on an H3 grid.
@@ -122,11 +122,11 @@ Planning. Earlier work in this repository family (a badminton pose-analysis prot
 
 **Repository name (suggestion):** `tomorrowhood`
 
-**Description (268 characters, limit 350):**
-Climate-aware, forward-looking neighbourhood recommender for Asia-Pacific. Ranks areas across 9 cities by where they're heading (2035, not 2025): climate hazards, sustainability, geopolitical exposure and personal fit, with backtested forecasts and honest uncertainty.
+**Description (256 characters, limit 350):**
+Climate-aware, forward-looking neighbourhood recommender for 10 global cities. Ranks areas by where they're heading (2035, not 2025): climate hazards, sustainability, geopolitical exposure and personal fit, with backtested forecasts and honest uncertainty.
 
-**Shorter alternative (151 characters):**
-Where to live in 2035, not 2025: neighbourhood-level, climate-aware recommendations for Asia-Pacific, with backtested forecasts and honest uncertainty.
+**Shorter alternative (155 characters):**
+Where to live in 2035, not 2025: neighbourhood-level, climate-aware recommendations for 10 global cities, with backtested forecasts and honest uncertainty.
 
 **Suggested topics:** `machine-learning`, `geospatial`, `time-series-forecasting`, `climate-risk`, `urban-analytics`, `recommender-system`, `nextjs`, `fastapi`, `h3`, `openstreetmap`, `relocation`, `sustainability`
 
