@@ -235,3 +235,9 @@ Where a feature is a snapshot, the report says so. The backtests in the evaluati
 - **Optional modules:** career (J1), language (I4, I8), origin-culture presence (I3), international or local-immersion preference (I9), home-community presence (I10), family (D2), student or bachelor needs (A6), nightlife and social scene (G2), accessibility (B8), household mode (O8), opt-in flags (I6).
 - **Report:** the same groups appear as sections, each showing the raw measures behind the score and their data confidence.| 2026-10-31 | A8 Temporary stay options for the arrival period (no live prices or ratings) | Accepted (V1.5) | OSM lodging tags plus curated price bands; links out to booking sites |
 | 2026-10-31 | C7 Proximity to an international airport (close / no preference / not too close) | Accepted (V1) | OSM, OurAirports and routing |
+| 2026-10-31 | B9 Online delivery coverage (city-level plus proxies, no platform scraping) | Accepted (V1.5) | Low confidence at neighbourhood level |
+| 2026-10-31 | J6 Student-loan and education-finance access for newcomers | Accepted (V1.5) | Curated; bank and ATM proximity added to B2 |
+| 2026-10-31 | M3 Digital and tech modernity | Accepted (V1 proxies, V1.5 indicators) | Transparent composite |
+| 2026-10-31 | F6 Women's safety (opt-in hard floor, environmental proxies, not cross-country comparable) | Accepted (V1) | Never labelled safe or unsafe |
+| 2026-10-31 | J7 Business, startup and investment friendliness for foreigners | Accepted (V1.5) | Own composite plus curated rules |
+| 2026-10-31 | J8 Career growth outlook for the user's profession | Accepted (V1.5) | Needs job-classification crosswalk |
