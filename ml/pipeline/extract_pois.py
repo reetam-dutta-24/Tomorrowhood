@@ -1,5 +1,5 @@
-"""Phase 1, step 2: turn a city's OpenStreetMap extract into a flat 'points table',
-each row tagged with its H3 hexagon.
+"""Phase 1, step 2 (v2): turn a city's OpenStreetMap extract into a flat 'points table',
+each row tagged with its H3 hexagon. Keeps every subtype; the taxonomy decides what counts.
 
 Usage (from the ml folder):
   python pipeline/extract_pois.py --city London --res 9
@@ -17,17 +17,14 @@ RAW = ROOT / "data" / "raw"
 OUT = ROOT / "data" / "pois"
 OUT.mkdir(parents=True, exist_ok=True)
 
-LEISURE = {"park", "fitness_centre", "sports_centre", "pitch",
-           "swimming_pool", "playground", "garden"}
 RAIL = {"station", "tram_stop", "subway_entrance"}
-TOURISM = {"hotel", "hostel", "motel", "guest_house", "apartment",
-           "museum", "attraction"}
 
 SCHEMA = pa.schema([
     ("osm_type", pa.string()), ("osm_id", pa.int64()),
     ("lat", pa.float64()), ("lng", pa.float64()), ("h3", pa.string()),
     ("cls", pa.string()), ("sub", pa.string()),
     ("has_levels", pa.bool_()), ("has_height", pa.bool_()), ("has_addr", pa.bool_()),
+    ("cuisine", pa.string()), ("stars", pa.string()),
 ])
 COLS = [f.name for f in SCHEMA]
 BATCH = 200_000  # rows held in memory before writing to disk
@@ -40,15 +37,10 @@ def slug(city):
 def classify(tags):
     """Return the (class, subtype) pairs an OSM object belongs to."""
     out = []
-    v = tags.get("amenity")
-    if v:
-        out.append(("amenity", v))
-    v = tags.get("shop")
-    if v:
-        out.append(("shop", v))
-    v = tags.get("leisure")
-    if v in LEISURE:
-        out.append(("leisure", v))
+    for key in ("amenity", "shop", "leisure", "tourism"):
+        v = tags.get(key)
+        if v:
+            out.append((key, v))
     if tags.get("highway") == "bus_stop":
         out.append(("transit", "bus_stop"))
     v = tags.get("railway")
@@ -56,9 +48,8 @@ def classify(tags):
         out.append(("transit", v))
     if tags.get("natural") == "tree":
         out.append(("tree", "tree"))
-    v = tags.get("tourism")
-    if v in TOURISM:
-        out.append(("tourism", v))
+    if tags.get("office") == "coworking":
+        out.append(("office", "coworking"))
     return out
 
 
@@ -71,7 +62,7 @@ class Collector(osmium.SimpleHandler):
         self.counts = {}
 
     def add(self, osm_type, osm_id, lat, lng, cls, sub,
-            lv=False, ht=False, ad=False):
+            lv=False, ht=False, ad=False, cuisine=None, stars=None):
         b = self.buf
         b["osm_type"].append(osm_type)
         b["osm_id"].append(osm_id)
@@ -83,6 +74,8 @@ class Collector(osmium.SimpleHandler):
         b["has_levels"].append(lv)
         b["has_height"].append(ht)
         b["has_addr"].append(ad)
+        b["cuisine"].append(cuisine)
+        b["stars"].append(stars)
         self.counts[cls] = self.counts.get(cls, 0) + 1
         if len(b["osm_id"]) >= BATCH:
             self.flush()
@@ -98,8 +91,10 @@ class Collector(osmium.SimpleHandler):
         pairs = classify(n.tags)
         if not pairs or not n.location.valid():
             return
+        cuisine, stars = n.tags.get("cuisine"), n.tags.get("stars")
         for cls, sub in pairs:
-            self.add("n", n.id, n.location.lat, n.location.lon, cls, sub)
+            self.add("n", n.id, n.location.lat, n.location.lon, cls, sub,
+                     cuisine=cuisine, stars=stars)
 
     def way(self, w):
         tags = w.tags
@@ -122,8 +117,9 @@ class Collector(osmium.SimpleHandler):
             self.add("w", w.id, lat, lng, "building", tags.get("building"),
                      "building:levels" in tags, "height" in tags,
                      "addr:housenumber" in tags)
+        cuisine, stars = tags.get("cuisine"), tags.get("stars")
         for cls, sub in pairs:
-            self.add("w", w.id, lat, lng, cls, sub)
+            self.add("w", w.id, lat, lng, cls, sub, cuisine=cuisine, stars=stars)
 
 
 def main():
