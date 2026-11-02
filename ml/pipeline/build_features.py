@@ -109,7 +109,7 @@ def main():
 
     if args.preview:
         gdf = gpd.read_parquet(grid).merge(
-            df[["h3", "everyday_services", "leisure_modern_upscale", "area_km2"]], on="h3")
+            df[["h3", "everyday_services", "leisure_modern_upscale"]], on="h3")
         fig, axes = plt.subplots(1, 2, figsize=(18, 8))
         for ax, col, title in ((axes[0], "everyday_services", "Everyday services"),
                                (axes[1], "leisure_modern_upscale", "Leisure, modern and upscale")):

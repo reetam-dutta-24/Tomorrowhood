@@ -40,6 +40,8 @@ The pipeline is built on **London, New York City, Tokyo and Singapore** first. B
 - **Immigration pathway planner:** route cards (study, skilled work, startup, remote work) with official sources and "last verified" dates. Not legal advice.
 - **Arrival tools:** a landing-area recommendation for the first weeks, airport access, and a first-year cost estimate.
 - **Glass-box scoring:** every number links to its source, licence and confidence. Data richness is shown as confidence, never as quality.
+- **Future Timeline mode:** a 2026 to 2036 slider showing money, time, risks and immigration milestones year by year, plus a goal-backward mode ("own a flat by 2032"). A simulation under stated assumptions, not a prediction.
+- **Investor mode ("best place to invest"):** a separate, opt-in objective using yield, price outlook, foreign-buyer rules, liquidity and risk, with uncertainty. Not financial advice; never recommends individual properties.
 - **Grounded AI assistant (later):** a chatbot built on retrieval-augmented generation (RAG) that answers questions from the project's curated sources and structured data, with citations. It explains results; it does not generate the scores.
 
 The full list, grouped and prioritised, is in the [feature catalog](docs/feature-catalog.md). Decisions and rejected ideas are in the [feature log](FEATURE-LOG.md).
@@ -72,6 +74,14 @@ Deep learning (for example street-imagery models) is deliberately deferred to v2
 
 ## Progress so far
 
+**Phase 1 (London as the reference city):**
+- H3 hexagon grid for Greater London (16,889 cells at resolution 9, each with its resolution-8 parent).
+- OpenStreetMap extract (Geofabrik) converted to a Parquet points table and queried with DuckDB.
+- An editable amenity taxonomy. A sanity check showed that about 70% of raw amenity points were street furniture (parking, benches, bins), which had made Heathrow look like London's richest amenity area; they are now counted separately.
+- Per-hexagon feature tables at both resolutions, including composites for everyday services and for leisure, modern and upscale presence.
+- Ring-based access features (about 300 m and about 1.2 km straight-line) that describe each hexagon's surroundings.
+- Next: housing prices (HM Land Registry Price Paid Data plus postcode lookup), then validate the "upscale" proxy against price tier.
+
 **Phase 0: data-coverage scorecard.** Before choosing the build order, the project measures how much OpenStreetMap data each city actually has, on an equal 6 km × 6 km square around the centre.
 
 Results for all ten cities (OpenStreetMap only; housing, climate and transit-feed coverage are measured separately):
@@ -98,6 +108,8 @@ These numbers show why raw tag completeness is not a quality score. Paris's near
 ```
 ml/                    data pipeline, scorecard and models (Python)
   scorecard/           OpenStreetMap coverage measurement
+  pipeline/            grid, POI extraction, taxonomy, feature and access tables
+  data/                large generated files (git-ignored)
 web/                   Next.js application
 PROJECT-ROADMAP.md     product thesis, architecture, phases, decision log
 FEATURE-LOG.md         every feature decision (accepted, deferred, rejected)
@@ -135,7 +147,7 @@ The project uses open data (OpenStreetMap under ODbL, national statistics, trans
 |---|---|
 | **MVP** | Accounts, short profile, 4 cities (London, NYC, Tokyo, Singapore), core features plus climate hazards, one real backtest, map UI, critique loop |
 | **v1** | All ten cities, scenario engine, questionnaires, regret view, twin finder, scouting plan |
-| **v1.5** | Pathway planner, arrival tools, street-view indicators, geopolitical flags |
+| **v1.5** | Pathway planner, arrival tools, future timeline mode, basic investor mode, street-view indicators, geopolitical flags |
 | **v2** | Community matching, monitoring alerts, deep-learning imagery features, more regions |
 
 Details: [PROJECT-ROADMAP.md](PROJECT-ROADMAP.md).

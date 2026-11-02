@@ -1,8 +1,8 @@
-# Tomorrowhood: Confirmed Feature Catalog (v0.2, 31 Oct 2026)
+# Tomorrowhood: Confirmed Feature Catalog (v0.3, 2 Nov 2026)
 
 Single source of truth linking **what the user cares about → what data measures it → what the form asks → what the report shows.** Built from the founder's 47-item list plus every addition accepted on 31 Oct 2026.
 
-**Status: v1 feature list frozen.** All items below are accepted. New ideas go to `FEATURE-LOG.md` as V2 unless they replace something here. Roughly 71 data features, 15 decision tools and one pathway-planner module.
+**Status: v1 feature list frozen.** All items below are accepted. New ideas go to `FEATURE-LOG.md` as V2 unless they replace something here. Roughly 84 data features (79 plus the five investor-mode features Q1 to Q5), 18 decision tools (O1 to O18) and one pathway-planner module. v0.3 adds O17 Future Timeline mode, O18 Investor mode, group Q, and the amenity taxonomy notes.
 
 ## How to read this
 
@@ -38,19 +38,21 @@ Single source of truth linking **what the user cares about → what data measure
 | A5 | Preferred home type (flat, house, gated, high-rise, premium) | 43 | N | Filter | OSM building types and levels; "gated society" mapped to generic classes | 🟡 | V1 |
 | A6 | Student and bachelor-friendly housing | 27 | N | Weight | Proxies: small-unit share, university proximity, shared-housing tags; no listing scraping | 🟡 | V1.5 |
 | A7 | Newcomer rental friction (deposits, key money, guarantor, credit history, lease length) | new | Co/Ci | Info + flag | Hand-curated per country, dated | 🟡 | V1 |
+| A8 | Temporary stay options for the arrival period (hotels, hostels, motels, guesthouses, serviced apartments, co-living, short-term rentals): density, proximity to transit and airport, typical price band per type | new | N | Weight / Info (arrival plan) | Accommodation points of interest from OSM and Overture (tourism and lodging tags; completeness varies ❓); typical nightly and monthly price bands from official tourism statistics or curated ranges ❓. **No live prices, availability or guest ratings**: booking-platform data is licensed or restricted, and we do not scrape it. Short-term-rental datasets for some cities exist but licences and legitimacy vary ❓. The app links out to booking sites | 🟡 | V1.5 |
 
 ## B. Daily convenience and amenities
 
 | ID | Feature | Your # | Level | Role | Data candidates | Ready | Wave |
 |---|---|---|---|---|---|---|---|
 | B1 | **Amenity density** (umbrella over B2 to B5, G1 to G4, D3) | 2 | N | Weight | OSM, Overture | 🟢 | MVP |
-| B2 | Basic services (grocery, pharmacy, salon, laundry, food stalls, shops) | 46 | N | Weight | OSM | 🟢 | MVP |
+| B2 | Basic services (grocery, pharmacy, salon, laundry, food stalls, shops, banks and ATMs) | 46 | N | Weight | OSM | 🟢 | MVP |
 | B3 | Restaurants and cafes with cuisine preference | 5 | N | Weight | OSM cuisine tag, Overture | 🟢 | MVP |
 | B4 | Healthy food and meal-delivery access | 13 | N | Weight | OSM diet and delivery tags only; no platform scraping | 🟡 | V1.5 |
 | B5 | Walkability: share of key services within a 15-minute walk | new | N | Derived (headline) | Routing on OSM | 🟢 | MVP |
 | B6 | Pedestrian and cycling infrastructure | 12 | N | Weight | OSM footways and cycleways (mapping conventions differ by city; Tokyo cycleways under-tagged) | 🟡 | MVP |
 | B7 | Car-free feasibility ("do I need a car?") | new | N | Derived | B5 + C1 + B2 | 🟢 | V1 |
 | B8 | Accessibility (step-free transit, wheelchair-tagged venues) | new | N | Filter / Weight | GTFS wheelchair fields, OSM wheelchair tags ❓ | 🟡 | V1.5 |
+| B9 | Online delivery coverage: food, grocery, quick commerce, parcels and e-commerce delivery speed | new | N/Ci | Weight | Per-address platform coverage is not open and we do not scrape platforms. Use: city-level platform presence (curated ❓), OSM delivery tags on restaurants and shops, parcel lockers and post offices, dark-store-style shops where tagged ❓. Neighbourhood-level coverage is weak, so it is shown with a low-confidence flag | 🟡 (neighbourhood level 🔴) | V1.5 |
 
 ## C. Mobility and work
 
@@ -62,6 +64,7 @@ Single source of truth linking **what the user cares about → what data measure
 | C4 | Part-time job proximity | 45 | N | Weight | No open job locations; proxy: retail and hospitality density | 🔴 | V1.5 (proxy) |
 | C5 | Airport and international connectivity (direct flights to home country) | new | Ci | Info | OurAirports and OpenFlights ❓ | 🟢 | V1 |
 | C6 | Time-zone overlap with home | new | Ci | Info | Trivial calculation | 🟢 | V1 |
+| C7 | Proximity to an international airport (travel time by transit and by road to the nearest international airport). The user chooses: **close / no preference / not too close** (the last links to noise, E6) | new | N | Weight (opt-in, two-sided) | OSM aerodromes and OurAirports (airport type and IATA code ❓), routing on OSM and GTFS | 🟢 | V1 |
 
 ## D. Education
 
@@ -91,6 +94,7 @@ Single source of truth linking **what the user cares about → what data measure
 | F3 | Aesthetics and visual character | 19 | N | Weight (experimental, flagged as culturally biased) | Street imagery + model | 🔴 | V2 |
 | F4 | Views (sunset, skyline, water) | 19 | N | Weight | Viewshed from elevation model plus building heights | 🟡 | V1.5 |
 | F5 | Pedestrian road safety (crash data) | new | N | Info | Some city crash datasets ❓ | 🟡 | V2 |
+| F6 | **Women's safety** (own feature; opt-in hard floor): night-time environment (street lighting, venues open late and footfall, night transit service, distance to police and hospitals) plus city and country context (legal protections, published survey indices ❓) | new | N/Ci/Co | Floor (opt-in) / Weight | OSM lighting tags, opening hours, GTFS night services; police open data by offence type only where published. **Recorded sexual-offence rates are not comparable across countries**: they reflect legal definitions and reporting as much as danger, so a higher number can mean more reporting. Used only within a city, flagged as such, never as a "safe/unsafe" label | 🟡 | V1 (environmental proxies), V1.5 (surveys and indices) |
 
 ## G. Leisure, fitness, social and culture
 
@@ -140,11 +144,14 @@ Note on I10 (for users who want to live near people from their own country): I9 
 
 | ID | Feature | Your # | Level | Role | Data candidates | Ready | Wave |
 |---|---|---|---|---|---|---|---|
-| J1 | Career-fit city and area (job-cluster match: tech, design, finance, etc.) | 39 | Ci | Weight | No open job-posting data; start with curated industry-cluster profiles and employment statistics | 🟡 | V1 |
+| J1 | Career-fit city and area for the profession the user enters (job-cluster match: tech, design, finance, etc.) | 39 | Ci/N | Weight | No open job-posting data; start with curated industry-cluster profiles and employment statistics, plus area-level proximity to employer clusters from OSM office and industrial land use | 🟡 | V1 |
 | J2 | Income level by profession, per city | 28 | Ci | Info | National wage statistics; job classifications differ by country, needs a crosswalk ❓ | 🟡 | V1 |
 | J3 | **Savings potential** (income by profession vs cost of living) | new | Ci | Derived (headline) | J2 + A4 | 🟡 | V1 |
 | J4 | Taxes for foreigners, banking and remittance ease | new | Co | Info | Curated | 🟡 | V1.5 |
 | J5 | ~~Stock market conditions~~ | 44 | | | | | **Dropped** |
+| J6 | Student-loan and education-finance access for international students and newcomers (eligibility by nationality and status, lenders, typical terms), plus banking and credit access without local credit history | new | Co | Info | Curated from official and lender pages, dated ❓. **Physical proximity to loan offices is a weak signal** (most lending is online or national), so branch and ATM proximity sits in B2 instead | 🟡 | V1.5 |
+| J7 | Business, startup and investment friendliness for foreigners, now and outlook (company set-up ease, foreign-ownership limits, startup and investor visa routes, tax incentives, funding ecosystem, talent pool, coworking and office supply) | new | Co/Ci | Weight (opt-in module) | Our own composite from open indicators (for example World Bank business-regulation data ❓, open company registries where available ❓, OSM coworking and offices) plus curated rules; proprietary startup-ecosystem rankings are not redistributed. Outlook from dated policy changes (L4) and published trends ❓ | 🟡 | V1.5 |
+| J8 | Career growth outlook for the user's profession: demand trend, salary trend, employer density, by city | new | Ci | Weight, Target (where published) | National occupation projections and wage series where published ❓ (formats differ by country, needs a job-classification crosswalk); OSM office and industrial clusters for employer density | 🟡 | V1.5 |
 
 ## K. Climate, sustainability and resilience
 
@@ -173,6 +180,7 @@ Note: climate (K1) is the same across a city but differs between cities. Heat an
 |---|---|---|---|---|---|---|---|
 | M1 | Internet speed and connectivity | 24 | N/Ci | Weight | Open speed-test datasets exist; licences may be non-commercial ❓ | 🟡 | V1.5 |
 | M2 | Utility reliability (power outages, water supply) | new | Ci | Info | National utility stats; weak comparability | 🔴 | V2 |
+| M3 | Digital and tech modernity: cashless and mobile-payment acceptance, vending and automated retail, parcel lockers, EV charging, bike-share, e-government services, 5G and fibre availability | new | N/Ci | Weight | OSM vending, charging, bike-share and locker tags (neighbourhood level); city-level indicators from central-bank payment statistics ❓, e-government indices ❓, coverage maps ❓ (licences to check). A transparent composite, not a single black-box score | 🟡 | V1 (OSM proxies), V1.5 (city indicators) |
 
 ## P. Growth and trajectory signals (from the roadmap; missing from the original 47)
 
@@ -180,6 +188,27 @@ Note: climate (K1) is the same across a city but differs between cities. Heat an
 |---|---|---|---|---|---|---|---|
 | P1 | Development momentum (built-up growth, night lights, new construction) | roadmap | N | Target | GHSL, VIIRS night lights, Overture | 🟢 | MVP |
 | P2 | Planned infrastructure pipeline (announced transit lines, large projects) | roadmap | N | Target / Scenario input | Curated from official plans, dated | 🟡 | V1.5 |
+
+## Q. Investment inputs (support O18; opt-in)
+
+| ID | Feature | Your # | Level | Role | Data candidates | Ready | Wave |
+|---|---|---|---|---|---|---|---|
+| Q1 | Rental yield (rent vs price) | new | N/Ci | Target / Derived | A2 with official rental statistics ❓; only aggregates, no listing scraping | 🟡 | V1.5 |
+| Q2 | Foreign-buyer rules and costs (ownership limits, stamp duties/surcharges, taxes, restrictions) | new | Co/Ci | Info + filter | Hand-curated, dated, sourced | 🟡 | V1.5 |
+| Q3 | Market liquidity (transaction volume, time to sell where published) | new | N/Ci | Info / Weight | Transaction registers (sales counts) | 🟡 | V1.5 |
+| Q4 | Financing access for foreigners (mortgage availability, deposit rules, typical rates) | new | Co | Info | Curated, dated ❓ | 🟡 | V2 |
+| Q5 | Risk adjustments (climate loss exposure, policy and currency risk, insurability) | new | N/Ci | Derived | K2, L4, roadmap risk-adjusted cost | 🟡 | V2 |
+
+Guardrails: investor mode is a separate objective the user turns on; it never recommends individual properties; every output carries "not financial advice", uncertainty and stress tests.
+
+## Amenity taxonomy (implementation notes, London pipeline)
+
+- Each OSM (class, subtype) pair maps to exactly one group, kept as editable data (`ml/pipeline/taxonomy.py`) with a duplicate guard.
+- Groups: daily_services, healthcare, education, food_drink, nightlife, culture_leisure, wellness_fitness, green_outdoor, modern_tech, upscale_retail, upscale_leisure, everyday_retail, worship, transport, stay, trees, street_furniture.
+- **Street furniture** (parking, benches, bins, bicycle racks) is separate and never counted as amenity richness; it was about 70% of raw amenity points.
+- Composites: `everyday_services` (daily_services, healthcare, education, food_drink, everyday_retail) and `leisure_modern_upscale` (culture_leisure, nightlife, wellness_fitness, modern_tech, upscale_retail, upscale_leisure, upscale hotels). The second is a headline user preference (feeds B1, G2, G4, M3).
+- "Upscale" is a proxy (4+ star hotels; jewellery, art, wine and deli shops; spas, golf, marinas), to be validated against price tier (I2) once housing data exists. Scale with percentiles or logs, not max.
+- Ring access features (k1 about 300 m, k4 about 1.2 km straight-line) feed B5 until routing exists; the presence-based essentials proxy saturates in inner London.
 
 ## N. Pathway planner (separate module)
 
@@ -203,7 +232,7 @@ A structured roadmap from the user's country to the target city.
 | O3 | Life-stage presets | Student, young professional, family, remote worker, retiree; each pre-fills the form with weights the user can override | Form | MVP |
 | O4 | Life-routine simulator | User describes a typical week; we compute weekly travel hours and cost per shortlisted area | Routing, B1 to B3, C1, C3, G4 | V1 |
 | O5 | Eligibility-aware shortlist | Cities with no realistic route for the user are excluded or penalised, with the reason shown | Pathway module (N), L1, L4 | V1.5 |
-| O6 | Landing area vs settling area | Recommends a short-stay landing area (transit, services, newcomer-friendly) separately from the long-term one | OSM accommodation tags, B2, C1, A7, I9 | V1.5 |
+| O6 | Landing area vs settling area | Recommends a short-stay landing area (transit, services, newcomer-friendly, easy from the airport) separately from the long-term one, with stay types and typical price bands; shows how long the user plans to stay temporarily | A8, C7, OSM accommodation tags, B2, C1, A7, I9 | V1.5 |
 | O7 | Pre-mortem ("why you might regret this") | Top three risks for this user and area, from rules over the data; no LLM | All dimensions, sensitivity analysis | V1 |
 | O8 | Couples and household mode | Two workplaces and two preference sets; finds areas that balance both and shows fairness | C3, ranking engine | V1.5 |
 | O9 | Before/after comparison | User enters where they live now; report shows change in commute, savings, climate, hazards, amenities | O1, J3, K1, K2 | V1.5 |
@@ -211,8 +240,12 @@ A structured roadmap from the user's country to the target city.
 | O11 | Break-even horizon | Years until savings potential covers the one-off cost of relocating | J3, O14 | V1.5 |
 | O12 | Time-machine map | Slider showing an area's past and forecast with uncertainty bands | Trajectory models | V1.5 |
 | O13 | "A year here" view | Month-by-month climate, daylight and seasonal conditions per area | K1, K5 | V1.5 |
-| O14 | Landing cost calculator | Total first-year cost: visa fees, deposits, flights, furniture, first months of rent | A7, J4, pathway module | V1.5 |
+| O14 | Landing cost calculator | Total first-year cost: visa fees, temporary stay, deposits, flights, furniture, first months of rent | A7, J4, pathway module | V1.5 |
 | O15 | Remote-worker mode | Coworking spaces, internet quality, time-zone overlap, remote-work visas | M1, C6, OSM, pathway module | V1.5 |
+| O16 | Grounded AI assistant (RAG chatbot) | Answers questions about results, methodology, policy cards and pathway routes using retrieval over our curated documents plus calls to the structured ranking and data services, with citations and "last verified" dates. It **explains** results; it never generates or changes the scores. Declines to give legal or immigration advice | Curated corpus (pathway module, policy layer, data and model cards), ranking API, vector index | V1.5 (after the curated corpus exists) |
+
+| O17 | **Future Timeline mode** (working name; "manifesting" mode) | Forward simulation: from the user's profile and chosen city/area/route, a 2026 to 2036 slider shows money (savings, costs, break-even), time (commute, hours), risks (climate, policy) and immigration milestones year by year as base, good and bad scenarios. Goal-backward sub-mode: the user states a goal ("own a flat by 2032", "permanent residency by year 5") and sees which cities, areas and routes make it realistic and what must be true. A simulation under stated assumptions, never a prediction of a person's life; every assumption is editable | J3, O11, O14, A2/A3 trends, K2, pathway module (N), L4, trajectory models | V1.5 |
+| O18 | **Investor mode ("best place to invest")** | A separate, opt-in mode with its own objective (risk-adjusted property outcome) and its own ranking, never mixed into livability scores. Uses price outlook, rental yield, foreign-buyer rules and costs, liquidity, financing access, and climate and policy risk, with uncertainty and stress tests. Shows areas and cities, never individual properties. Not financial advice | A2, A3, Q1 to Q5, K2, L4, I7, trajectory models | V1.5 (basic), V2 (full) |
 
 Product features from the roadmap that are not data features (scenario stress tests, regret view, climate analogue cities, risk-adjusted cost, shock simulator, reversibility score, glass-box scoring) remain in `PROJECT-ROADMAP.md`, Section 7.
 
@@ -222,7 +255,7 @@ The forward-looking claim rests on features that have **history** to train on or
 
 | Forecast basis | Features |
 |---|---|
-| Historical time series (backtestable) | A2 price, A3 rent, I1 population, P1 development momentum, E4 air quality trend, K4 heat and green-cover trend, C1 transit access (opening dates) |
+| Historical time series (backtestable) | A2 price, A3 rent, Q1 rental yield, Q3 liquidity, I1 population, P1 development momentum, E4 air quality trend, K4 heat and green-cover trend, C1 transit access (opening dates), J8 profession demand and salary trend (where published) |
 | Published scenario projections | K2 climate hazards, K1 climate shifts |
 | Curated, dated plans | P2 planned infrastructure, L4 policy tightening |
 | Snapshot only (shown, not forecast) | Most amenity, safety, education and leisure features |
@@ -231,13 +264,6 @@ Where a feature is a snapshot, the report says so. The backtests in the evaluati
 
 ## How the preference form falls out of this catalog
 
-- **Core form (about 5 minutes):** life-stage preset (O3), budget and home type (A2, A4, A5), commute (C3), climate preference (K1), top priorities as sliders (one per group: daily convenience, fitness and nature, leisure and culture, education, health, mobility), and hard floors (safety, noise, air quality, hazards).
-- **Optional modules:** career (J1), language (I4, I8), origin-culture presence (I3), international or local-immersion preference (I9), home-community presence (I10), family (D2), student or bachelor needs (A6), nightlife and social scene (G2), accessibility (B8), household mode (O8), opt-in flags (I6).
-- **Report:** the same groups appear as sections, each showing the raw measures behind the score and their data confidence.| 2026-10-31 | A8 Temporary stay options for the arrival period (no live prices or ratings) | Accepted (V1.5) | OSM lodging tags plus curated price bands; links out to booking sites |
-| 2026-10-31 | C7 Proximity to an international airport (close / no preference / not too close) | Accepted (V1) | OSM, OurAirports and routing |
-| 2026-10-31 | B9 Online delivery coverage (city-level plus proxies, no platform scraping) | Accepted (V1.5) | Low confidence at neighbourhood level |
-| 2026-10-31 | J6 Student-loan and education-finance access for newcomers | Accepted (V1.5) | Curated; bank and ATM proximity added to B2 |
-| 2026-10-31 | M3 Digital and tech modernity | Accepted (V1 proxies, V1.5 indicators) | Transparent composite |
-| 2026-10-31 | F6 Women's safety (opt-in hard floor, environmental proxies, not cross-country comparable) | Accepted (V1) | Never labelled safe or unsafe |
-| 2026-10-31 | J7 Business, startup and investment friendliness for foreigners | Accepted (V1.5) | Own composite plus curated rules |
-| 2026-10-31 | J8 Career growth outlook for the user's profession | Accepted (V1.5) | Needs job-classification crosswalk |
+- **Core form (about 5 minutes):** life-stage preset (O3), budget and home type (A2, A4, A5), commute (C3), climate preference (K1), top priorities as sliders (one per group: daily convenience, fitness and nature, leisure and culture, education, health, mobility), and hard floors (safety, women's safety (opt-in, F6), noise, air quality, hazards).
+- **Optional modules:** career (J1, J8), business or investor interest (J7), student finance (J6), delivery needs (B9), language (I4, I8), origin-culture presence (I3), international or local-immersion preference (I9), home-community presence (I10), family (D2), student or bachelor needs (A6), nightlife and social scene (G2), accessibility (B8), arrival plan and airport proximity (A8, C7), household mode (O8), opt-in flags (I6), investor mode (O18, Q1 to Q5), and the future-timeline goal inputs (O17).
+- **Report:** the same groups appear as sections, each showing the raw measures behind the score and their data confidence.

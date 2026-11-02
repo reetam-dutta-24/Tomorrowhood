@@ -1,6 +1,6 @@
-# Neighbourhood Advisor — Product Thesis & Master Roadmap (v2, working title)
+# Tomorrowhood — Product Thesis & Master Roadmap (v3, 2 Nov 2026; save as `PROJECT-ROADMAP.md`)
 
-**Status:** planning · **Scope v1:** 10 of the world's most cosmopolitan, immigrant-receiving cities · **Cities v1:** Tokyo, Singapore, Melbourne, London, New York City, San Francisco, Paris, Seoul, Berlin, Toronto (Berlin and Toronto last: known data gaps)
+**Status:** Phase 0 done, Phase 1 in progress (London reference city) · **Scope v1:** 10 of the world's most cosmopolitan, immigrant-receiving cities · **Cities v1:** Tokyo, Singapore, Melbourne, London, New York City, San Francisco, Paris, Seoul, Berlin, Toronto (Berlin and Toronto last: known data gaps)
 
 Status legend: ✅ Done · 🟡 In progress · ⬜ Not started · ❓ Unverified (needs the Phase 0 scorecard)
 
@@ -8,7 +8,7 @@ Status legend: ✅ Done · 🟡 In progress · ⬜ Not started · ❓ Unverified
 
 ## 1. Headline and thesis
 
-**Headline (working):** *Choose where to live for the world of 2035, not 2025.*
+**Headline (working):** *Choose where to live for the world of 2035, not 2026.*
 
 Relocation is an **investment decision under uncertainty** whose payoff arrives over 3–10 years. Most tools describe places as they are today, at country or city level. People rarely regret the country; they regret the **neighbourhood**. And almost nobody weighs **climate, sustainability and geopolitics** when choosing where to live, although these shape how a place will be in ten years.
 
@@ -133,6 +133,10 @@ H3 hexagonal grid at neighbourhood scale, aggregated to named districts for disp
 | 14 | **Geopolitical exposure:** stability, rule of law, conflict proximity, energy and food import dependence, capital controls, currency stability | Global Peace Index ❓, World Bank governance ❓, GDELT ❓ (flags and scenarios only) |
 | 15 | Policy layer (national): eligibility, tightening risk | Hand-curated, dated |
 
+**City extent and centre rules (decided 1-2 Nov 2026):**
+- Scorecard squares are centred on the **dense urban core**, not the administrative centre. Singapore's first centre (1.3000, 103.8400) included harbour water; moving to **(1.3343, 103.8563)** raised buildings from about 15k to 18-19k. Water was a real bias but not the whole story (Singapore is simply less dense in OSM).
+- Modelling extents use a per-city boundary from Nominatim/official sources. London = Greater London (16,889 res-9 cells). Tokyo's official area includes remote islands, so it needs a clipped boundary. Every city's boundary is checked against its cell count and area before use.
+
 Dimension 9: user picks which categories count (coast, mountains, trails, protected areas, hot springs, islands) and "off-beat" is defined by measurable proxies. Check protected-area dataset licences before commercial use.
 
 ---
@@ -144,6 +148,26 @@ Layers: **country** (policy, eligibility, geopolitics, tightening risk) → **ci
 **Pipeline:** raw sources → standardised H3 feature tables → trajectory models with uncertainty → **scenario engine** (climate, policy, economy, geopolitics) → user-weighted, floor-filtered ranking → regret-minimising shortlist → critique loop.
 
 **Modelling notes:** panel forecasting per dimension, with naive baselines that must be beaten or honestly reported; conformal or equivalent uncertainty with calibration reported; imputation inside CV folds with "was imputed" flags; data richness feeds a confidence score, never a quality score; climate trajectories use published scenario ensembles (do not invent climate physics), downscaled and combined with local exposure; preference modelling from profile and critiques.
+
+### 6.1 Tech stack and data-engineering decisions
+
+| Layer | Choice | Status |
+|---|---|---|
+| Data and ML | Python, pandas, GeoPandas, Shapely, H3, pyosmium, DuckDB + Parquet, scikit-learn, LightGBM, statsmodels, conformal prediction | In use (first four, DuckDB, pyosmium) |
+| Service | FastAPI as a separate service for ranking, scenarios, assistant | Default, assumed unless objected |
+| Web | Next.js, TypeScript, Tailwind, Auth.js, PostgreSQL + PostGIS (+ pgvector for RAG), MapLibre, deck.gl | Default; web app built after models |
+| Ops | Docker, GitHub Actions | Planned |
+| Deferred | Deep learning, GPUs | v2 |
+
+Decisions assumed as defaults (the founder said "continue"; revisit if wanted): (1) DuckDB + Parquet for the pipeline, Postgres only for the app; (2) FastAPI separate from Next.js; (3) web app after the models exist. **London is the reference city**: every step is built and checked on London, then repeated for NYC, Tokyo, Singapore.
+
+**H3 grid:** ingest at **resolution 9** (about 0.1 km² tiles, about 300 m between centres), model and display at **resolution 8** (about 0.74 km²). Each res-9 cell has one res-8 parent. Rolling up means **summing counts and recomputing shares, never averaging ratios**. H3 polyfill includes a cell when its centre is inside the boundary; ways (buildings, parks) are assigned by centroid, so park area needs real geometry later.
+
+**OSM pipeline:** Overpass only for the scorecard (slow, rationed). Real extraction uses Geofabrik `.osm.pbf` files read with pyosmium (relations skipped for now) into a Parquet points table; DuckDB joins points to the grid with a LEFT JOIN so empty hexagons stay as zero. Zero means "none mapped", not "none exist".
+
+**Amenity taxonomy as editable data (`taxonomy.py`):** (class, subtype) maps to one group. Street furniture (parking, benches, bins, bicycle racks) is kept separate: **about 70% of raw London amenity points were street furniture**, and Heathrow ranked as the richest "amenity" area until this was fixed. Composites: `everyday_services` and **`leisure_modern_upscale`** (culture/leisure, nightlife, wellness/fitness, modern tech, upscale retail, upscale leisure, upscale hotels). Founder note: leisure/modern/upscale presence is a headline user preference. "Upscale" is not an OSM tag, so it is built from proxies (hotels with 4+ stars; jewellery, art, wine, deli shops; spas, golf, marinas) and must be validated against price tier once housing data exists. Use percentile or log scaling, not max-scaling, because the West End dominates.
+
+**Ring-based access features:** `grid_disk` rings k1 (about 300 m) and k4 (about 1.2 km, a straight-line proxy for a 15-minute walk), area-corrected at city boundaries. The presence-based "essentials" proxy saturates in inner London, so scoring needs percentile or density versions (later).
 
 **Web app:** reuse the existing shell (Next.js, Auth.js, themes, onboarding wizard, dashboard, CI); map-first UI; every score expandable to its source and confidence ("glass box").
 
@@ -162,6 +186,8 @@ Layers: **country** (policy, eligibility, geopolitics, tightening risk) → **ci
 10. **Bias audit:** where stated preferences differ from evidence.
 11. **Group relocation optimiser** (B2B): balance several employees' preferences.
 12. **Aggregated demand signals** (anonymised) as a longer-term data moat.
+13. **Future Timeline mode (catalog O17, V1.5):** forward simulation (a 2026-2036 slider with base/good/bad scenarios for money, time, risks, immigration milestones) plus a goal-backward sub-mode ("own a flat by 2032"). A simulation under stated assumptions, never a prediction of a person's life.
+14. **Investor mode, "best place to invest" (catalog O18, V1.5 to V2):** a separate opt-in objective (risk-adjusted property outcomes) with its own supporting features (Q1-Q5). Not financial advice; never recommends individual properties. Kept apart from livability scoring.
 
 ---
 
@@ -174,7 +200,8 @@ Table per source: URL, licence, commercial use?, attribution or share-alike duti
 | Japan housing | MLIT transaction prices | Anonymised to district level ❓ |
 | Korea housing | MOLIT actual sale prices (data.go.kr), Seoul dataset | API key and terms |
 | Singapore housing | HDB resale (data.gov.sg) | Public housing only |
-| UK housing | HM Land Registry price paid ❓ | Memory; verify |
+| UK housing | HM Land Registry Price Paid Data (England and Wales; Open Government Licence per my memory, **verify**) | Step 6 input. Small-sample problem: few sales per res-9 cell, so aggregate at res 8 or multi-year windows and carry a `sales_count` confidence column |
+| UK geography | ONS Postcode Directory (postcode to lat/lng) | Needed to place sales on the grid. **Licence/terms to verify** (contains Royal Mail and OS-derived data; check commercial use and attribution) |
 | US housing | NYC rolling sales ❓; San Francisco assessor historical rolls (searched 31 Oct 2026) | Confirm terms |
 | Australia housing | Victoria suburb-level quarterly and yearly sales reports (searched) | Aggregates only, not individual sales |
 | France housing | DVF open property transactions ❓ | Memory; verify |
@@ -217,8 +244,8 @@ Table per source: URL, licence, commercial use?, attribution or share-alike duti
 
 | Phase | Work | Status |
 |---|---|---|
-| **0** | Decisions, repo, **data-richness scorecard script** (fills every ❓), licence register | ⬜ |
-| **1** | Spatial foundation: H3 grid, city extents, OSM, routing, GTFS. **Tokyo end to end first** | ⬜ |
+| **0** | Decisions, repo, **data-richness scorecard script** (OSM coverage done for all 10 cities; housing, transit-feed and climate coverage and the licence register still open) | ✅ OSM part, 🟡 rest |
+| **1** | Spatial foundation: H3 grid, city extents, OSM, routing, GTFS. **London end to end first** (changed from Tokyo: best-known data, fastest to sanity-check) | 🟡 |
 | **2** | Feature layers: accessibility, environment, growth, transit, stats, nature proximity, housing, **climate hazard layers** | ⬜ |
 | **3** | Trajectory models, uncertainty, backtests, leave-one-city-out, ablations (**MVP cut line**) | ⬜ |
 | **4** | Core profile, floors, shortlist, critique loop, **scenario engine** (climate and policy first) | ⬜ |
@@ -226,6 +253,32 @@ Table per source: URL, licence, commercial use?, attribution or share-alike duti
 | **6 (v1.5)** | Personality and interest instruments, affinities and bias audit, future-worldview form, scouting plan, street-view indicators, geopolitical flags, tightening-risk predictor | ⬜ |
 | **7** | Evaluation write-up, deployment, demo video, user study | ⬜ |
 | **v2** | Community matching, monitoring alerts, nature and remote mode (Bali, Caribbean-style destinations), more regions, mainland China satellite-only tier after legal check, B2B group relocation | ⬜ |
+
+### Phase 1 progress (London, to 2 Nov 2026)
+| Step | Output | Status |
+|---|---|---|
+| 1 | `make_grid.py`: Greater London H3 grid, 16,889 res-9 cells, with res-8 parent | ✅ |
+| 2 | `extract_pois.py`: Geofabrik PBF to Parquet points table (amenities, transit, trees, buildings with tag flags) | ✅ |
+| 3 | First feature table; sanity check exposed the street-furniture / Heathrow problem | ✅ |
+| 4 | `taxonomy.py` + `build_features.py`: group counts, composites, res-8 rollup, density and share columns | ✅ (commit to confirm) |
+| 5 | `build_access.py`: k1/k4 ring features, essentials proxy, `lmu_density_k4` | ✅ built; printed output and commit to confirm |
+| 6 | Housing: Price Paid Data + ONS Postcode Directory to median price and sales count per area per year | ⬜ waiting on downloaded files |
+
+### Scorecard results (6 km square, OSM only; height info is a lower bound)
+| City | Bldg/km² | Amen/km² | Transit/km² | Height info | Address |
+|---|---|---|---|---|---|
+| Paris | 1,145 | 1,103 | 53 | 68% | 1% |
+| Berlin | 616 | 656 | 26 | 67% | 18% |
+| New York | 671 | 516 | 37 | 95% | 74% |
+| Tokyo | 1,766 | 472 | 43 | 17% | 7% |
+| London | 1,045 | 455 | 37 | 49% | 58% |
+| Toronto | 624 | 345 | 25 | 23% | 39% |
+| Seoul | 679 | 323 | 29 | 12% | 19% |
+| Melbourne | 950 | 247 | 22 | 23% | 66% |
+| San Francisco | 1,301 | 241 | 46 | 81% | 78% |
+| Singapore | 426 | 200 | 21 | 46% | 73% |
+
+Lessons: tag completeness reflects local mapping conventions and imports (Paris address about 1% because of France's national address database; NYC and SF heights from official imports; Tokyo and Seoul lowest height info), not quality. Richness means confidence, not quality. Centre choice changes results (Singapore water). Tokyo building heights will need another source.
 
 **MVP = accounts, a short core profile, 4 cities (London, NYC, Tokyo, Singapore), 3–4 dimensions plus climate hazards, one real backtest, map UI, critique loop.** Everything else is bonus. The 8–10 week estimate assumes this 4-city cut; the full 10-city v1 is likely longer than 14–18 weeks (more countries, languages and licences). Re-estimate after Phase 0.
 
@@ -245,6 +298,14 @@ Table per source: URL, licence, commercial use?, attribution or share-alike duti
 - **Property data's role:** backtest proxy and affordability input.
 - **No scraping of listing portals;** data-licence register mandatory.
 - **China excluded in v1** (geodata restrictions).
+- **Project name (31 Oct 2026):** working title Tomorrowhood; tagline "Where to live in 2035, not 2026". Domain/handle/trademark check still open.
+- **Feature list frozen for v1 (31 Oct 2026):** new ideas go to V2 via `FEATURE-LOG.md` unless they replace something.
+- **H3 res 9 ingest / res 8 model (1 Nov 2026)** and **sum-not-average rollups.**
+- **Taxonomy-as-data and street-furniture separation (2 Nov 2026):** raw amenity counts were about 70% street furniture; Heathrow topped the ranking. `leisure_modern_upscale` is the headline preference composite.
+- **Singapore centre moved to the dense core (1 Nov 2026)**; centre rule documented in 5.1.
+- **London is the reference city (2 Nov 2026)**, replacing "Tokyo first".
+- **Future Timeline mode and Investor mode accepted (1 Nov 2026)** as O17/O18, V1.5 to V2; investor mode is a separate opt-in objective and not financial advice.
+- **Stack defaults (2 Nov 2026):** DuckDB + Parquet pipeline, separate FastAPI service, web app after models; deep learning and GPUs in v2.
 - **Competitive check (30 Oct 2026):** adjacent tools exist; the full combination was not found; the "AI relocation advisor" category is crowded with thin wrappers, so rigour and transparency are the differentiators.
 
 ---
@@ -259,7 +320,16 @@ Table per source: URL, licence, commercial use?, attribution or share-alike duti
 - [ ] Re-run the competitor search quarterly; check local-language products
 - [ ] Verify the ❓ housing sources for London, NYC, Paris, Tokyo, Singapore, Seoul; find any usable Berlin and Toronto price proxy
 - [ ] Policy layer: curate immigration/eligibility rules for about 9 countries (dated, sourced)
-- [ ] Update GitHub repo description and README to the global scope (done in the project description file)
+- [x] Update GitHub repo description and README to the global scope (done)
+- [ ] Confirm commits for Steps 4 and 5; review Step 5 printed output (essentials distributions, top lmu hexes)
+- [ ] Verify south-west and north-west `leisure_modern_upscale` hot spots; validate against price tier after Step 6
+- [ ] Step 6 housing: Price Paid + ONSPD; verify both licences; sales-count confidence column
+- [ ] Percentile/density scoring for the saturating essentials proxy
+- [ ] Real geometry later: park area, road and cycleway length
+- [ ] GTFS transit; climate layers; repeat pipeline for NYC, Tokyo, Singapore (Tokyo boundary clip)
+- [ ] Project name/domain/trademark check; data-licence register
+- [ ] Tidy CourtKinetics repo; deferred web-repo lint fixes
+- [ ] Add `ml/.venv/`, `ml/scorecard/cache/`, `ml/data/` to `.gitignore`
 
 ---
 
