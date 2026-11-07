@@ -1,3 +1,5 @@
 ml/.venv/
 ml/scorecard/cache/
 ml/data/
+__pycache__/
+*.pyc
